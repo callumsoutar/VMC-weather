@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Current Weather</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Include the Font Awesome CSS file -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <style>
+    body {
+  font-family: Arial, sans-serif;
+  background-color: #f8f8f8;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+#heading {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+#heading h2 {
+  font-size: 36px;
+  color: #0047ab;
+  margin: 0;
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+#keyInfo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.keyInfoItem {
+  flex-basis: 25%;
+  text-align: center;
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  margin: 10px;
+}
+
+.keyInfoItem i {
+  font-size: 48px;
+  color: #0047ab;
+  margin-bottom: 10px;
+}
+
+.keyInfoItem h2 {
+  font-size: 20px;
+  margin: 0;
+  color: #333;
+}
+
+#weather {
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 600px;
+  width: 100%;
+}
+
+#weather p {
+  margin-bottom: 10px;
+  font-weight: 400;
+}
+
+.icon {
+  margin-right: 10px;
+}
+
+.icon.windsock-icon {
+  color: #0047ab;
+}
+
+.icon.thermometer-icon {
+  color: #ff4d4d;
+}
+
+/* Added styles for input field and button */
+
+#weather input[type="text"] {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-right: 10px;
+}
+
+#weather button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #0047ab;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#weather button:hover {
+  background-color: #002d6e;
+}
+
+.weather-info .icon {
+  font-size: 48px;
+}
+
+.weather-photo {
+  max-width: 100%;
+  max-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.weather-photo img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.9); /* Add gray shadow */
+  border-radius: 2px;
+}
+
+#windDisplay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#windCircle {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#windDisplay {
+  display: flex;
+  align-items: center;
+}
+
+#windCircle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #fff;
+  margin-right: 10px;
+}
+
+#windDirection {
+  margin: 0;
+  font-size: 20px;
+}
+
+#windIcon {
+  font-size: 30px;
+  color: #333;
+}
+
+.weather-info {
+  display: flex;
+  justify-content: space-between;
+}
+  </style>
+</head>
+<body>
+  <div id="heading"><h2>Check if it's good to go flying!</h2></div>
+
+  <div id="keyInfo"></div>
+  <div id="weather">
+    <input type="text" id="cityInput" placeholder="Enter a city">
+      <button onclick="getWeather()">Get Weather</button>
+  </div>
+  
+  <script>
+    // Replace 'YOUR_API_KEY' with your actual API key
+    const apiKey = 'ba9308492c7f05e7f852e5f012af7cd2';
+
+    // Function to trigger VMC webhook
+    function triggerVMCWebhook() {
+        const VMCwebhookURL = 'https://maker.ifttt.com/trigger/VFR/with/key/d7h3K0YH1ypVnrqI0W3Xta';
+
+  fetch(VMCwebhookURL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({}),
+  })
+    .then(response => {
+      if (response.ok) {
+        console.log('Webhook 1 triggered successfully!');
+      } else {
+        throw new Error('Failed to trigger webhook 1');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error.message);
+    });
+}
+
+    // Function to trigger IMC webhook 
+    function triggerIMCWebhook() {
+        const IMCwebhookURL = 'https://maker.ifttt.com/trigger/IMC/with/key/d7h3K0YH1ypVnrqI0W3Xta';
+
+  fetch(IMCwebhookURL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({}),
+  })
+    .then(response => {
+      if (response.ok) {
+        console.log('Webhook 1 triggered successfully!');
+      } else {
+        throw new Error('Failed to trigger webhook 1');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error.message);
+    });
+
+    console.log('IMC Webhook triggered!');
+}
+      
+function getWeather() {
+  const input = document.getElementById('cityInput');
+  let enteredCity = input.value;
+
+  if (enteredCity.trim() !== '') {
+    city = enteredCity;
+    document.getElementById('heading').innerHTML = `<h2>Current Weather for ${city}</h2>`;
+    checkWeatherConditions();
+  }
+}
+
+// Function to retrieve the weather icon class based on weather condition
+function getWeatherIconClass(iconCode) {
+      let weatherIconClass = '';
+
+      if (iconCode >= 200 && iconCode <= 232) {
+        weatherIconClass = 'fas fa-bolt';
+      } else if (iconCode >= 300 && iconCode <= 321) {
+        weatherIconClass = 'fas fa-cloud-rain';
+      } else if (iconCode >= 500 && iconCode <= 531) {
+        weatherIconClass = 'fas fa-cloud-showers-heavy';
+      } else if (iconCode >= 600 && iconCode <= 622) {
+        weatherIconClass = 'fas fa-snowflake';
+      } else if (iconCode >= 701 && iconCode <= 781) {
+        weatherIconClass = 'fas fa-smog';
+      } else if (iconCode === 800) {
+        weatherIconClass = 'fas fa-sun';
+      } else if (iconCode >= 801 && iconCode <= 804) {
+        weatherIconClass = 'fas fa-cloud';
+      } else {
+        weatherIconClass = 'fas fa-question-circle';
+      }
+
+      return weatherIconClass;
+    }
+
+    // Fetch weather data from OpenWeather API
+    function checkWeatherConditions() {
+  fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}`)
+    .then(response => response.json())
+    .then(data => {
+        const weatherDiv = document.getElementById('weather');
+        const keyInfo = document.getElementById('keyInfo');
+        const temperature = Math.round(data.main.temp - 273.15); // Convert from Kelvin to Celsius
+        const description = data.weather[0].description;
+        const windSpeed = Math.round(data.wind.speed * 1.94384); // Convert m/s to knots
+        const windDirectionDegrees = data.wind.deg;
+        const humidity = data.main.humidity;
+        const visibility = data.visibility;
+        const clouds = data.clouds.all;
+        const rainFall = data.rain && data.rain["1h"]; // Check if the rain object and "1h" property exist
+        const country = data.sys.country
+        const QNH = data.main.pressure;
+        const weatherConditionCode = data.weather[0].id;
+        const weatherIconClass = getWeatherIconClass(weatherConditionCode);
+
+        const keyWeatherInfo = `
+
+        <div class="weather-info">
+  <div class="keyInfoItem">
+    <i class="icon windsock-icon fa fa-wind"></i>
+    <h2>${windSpeed}kts</h2>
+  </div>
+
+  <div id="windDisplay">
+    <div class="keyInfoItem">
+      <i id="windIcon" class="fas fa-arrow-up fa-rotate-90"></i>
+      <p id="windDirection">${windDirectionDegrees}</p>
+      <h2>Wind direction</h2>
+    </div>
+  </div>
+
+  <div class="keyInfoItem">
+    <i class="icon thermometer-icon fas fa-thermometer-half"></i>
+    <h2>${temperature}°C</h2>
+  </div>
+
+  <div class="keyInfoItem">
+    <i class="icon weather-icon ${weatherIconClass}"></i>
+    <h2>${description}</h2>
+  </div>
+</div>
+
+`;
+        const weatherHTML = `
+          
+          <h3><strong>Observations at:</strong> ${getCurrentTime()}
+          <p><strong>Description:</strong> ${description}</p>
+          <p><strong>Wind Speed:</strong> ${windSpeed} knots</p>
+          <p><strong>Humidity:</strong> ${humidity}%</p>
+          <p><strong>Visibilty:</strong> ${visibility}m</p>
+          <p><strong>Clouds:</strong> ${clouds}%</p>
+          <p><strong>QNH:</strong> ${QNH}hpa</p>
+          ${rainFall ? `<p><strong>Rain in last hour:</strong> ${rainFall}mm</p>` : ''}
+          
+          <div class="weather-photo">
+              <img src="assets/${city.toLowerCase()}.png" alt="${city}">
+          `;
+
+        weatherDiv.innerHTML = weatherHTML;
+        keyInfo.innerHTML = keyWeatherInfo;
+
+        const windDirectionElement = document.getElementById('windDirection');
+        const windIconElement = document.getElementById('windIcon');
+
+        windDirectionElement.textContent = `${windDirectionDegrees}°`;
+        windIconElement.style.transform = `rotate(${windDirectionDegrees}deg)`;
+
+        // Trigger webhooks based on weather conditions
+        if (clouds > 70 && visibility < 7000) {
+          triggerIMCWebhook(); // Call IMC webhook 
+
+        } else if (description.includes('cloudy') || description.includes('rain') || description.includes('showers')) {
+          triggerIMCWebhook(); // Call IMC webhook
+
+        } else if (windSpeed >= 25) {
+          triggerIMCWebhook(); // Call IMC webhook
+
+        } else if (visibility >= 7000 && clouds < 70) {
+          triggerVMCWebhook(); // Call VMC webhook
+
+        } else {
+          console.log('No webhook condition met.');
+        }
+
+        // Log JSON payload to console
+        console.log(data);
+        console.log('Weather conditions checked!');
+      })
+
+      .catch(error => {
+        const weatherDiv = document.getElementById('weather');
+        weatherDiv.innerHTML = `<p>Error: ${error.message}</p>`;
+      });
+    }
+
+    function getCurrentTime() {
+  const now = new Date();
+  const minutes = now.getMinutes();
+  const roundedMinutes = Math.round(minutes / 5) * 5; // Round minutes to the nearest 5
+  const currentTime = now.getHours() + ':' + (roundedMinutes < 10 ? '0' : '') + roundedMinutes;
+  return currentTime;
+}
+
+    checkWeatherConditions();
+
+    setInterval(checkWeatherConditions, 900000);
+
+  </script>
+</body>
+</html>
