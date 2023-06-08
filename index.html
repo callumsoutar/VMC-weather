@@ -336,7 +336,7 @@ function getWeatherIconClass(iconCode) {
           ${rainFall ? `<p><strong>Rain in last hour:</strong> ${rainFall}mm</p>` : ''}
           
           <div class="weather-photo">
-              <img src="assets/${city.toLowerCase()}.png" alt="${city}">
+              <img src="${city.toLowerCase()}.png" alt="${city}">
           `;
 
         weatherDiv.innerHTML = weatherHTML;
